@@ -1,0 +1,8 @@
+.settings/
+target/
+bin/
+.*
+!.gitignore
+*.log
+src/main/resources/db.properties
+
