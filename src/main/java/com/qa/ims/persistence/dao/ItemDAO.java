@@ -28,7 +28,7 @@ public class ItemDAO implements Dao<Item> {
 		Long id = resultSet.getLong("item_id");
 		String name = resultSet.getString("name");
 		Money value = Money.pounds(resultSet.getBigDecimal("value"));
-		int quantity = resultSet.getInt("quantity");
+		Integer quantity = resultSet.getInt("quantity");
 		
 		return new Item(id, name, value, quantity);
 	}
