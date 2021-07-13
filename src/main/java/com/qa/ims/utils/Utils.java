@@ -1,9 +1,12 @@
 package com.qa.ims.utils;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.domain.Money;
 
 public class Utils {
 	
@@ -50,6 +53,35 @@ public class Utils {
 			}
 		} while (doubleInput == null);
 		return doubleInput;
+	}
+	
+	public Integer getInteger() {
+		String input = null;
+		Integer intInput = null;
+		do {
+			try {
+				input = getString();
+				intInput = Integer.parseInt(input);
+			} catch (NumberFormatException nfe) {
+				LOGGER.info("Error - Please enter a number");
+			}
+		} while(intInput == null);
+		return intInput;
+	}
+	
+	public Money getValue() {
+		Money money = null;
+		String input = null;
+		do {
+			try {
+				input = getString();
+				money = Money.pounds(BigDecimal.valueOf(Double.valueOf(input)));
+			} catch (NumberFormatException nfe) {
+				LOGGER.info("Error - Please enter a value");
+			}
+		} while(money == null);
+		return money;
+		
 	}
 
 }

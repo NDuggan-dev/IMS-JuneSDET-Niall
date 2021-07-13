@@ -4,9 +4,9 @@ CREATE SCHEMA IF NOT EXISTS `ims`;
 
 USE `ims` ;
 
-CREATE TABLE IF NOT EXISTS `ims`.`customers` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `first_name` VARCHAR(40) DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `customers` (
+    `customer_id` INT(11) NOT NULL AUTO_INCREMENT,
+    `forneame` VARCHAR(40) DEFAULT NULL,
     `surname` VARCHAR(40) DEFAULT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`customer_id`)
 );

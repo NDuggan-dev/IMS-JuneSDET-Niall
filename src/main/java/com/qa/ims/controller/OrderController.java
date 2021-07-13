@@ -6,67 +6,68 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.qa.ims.persistence.dao.CustomerDAO;
+import com.qa.ims.persistence.dao.OrderDAO;
 import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Order;
 import com.qa.ims.utils.Utils;
 
 /**
  * Takes in customer details for CRUD functionality
  *
  */
-public class CustomerController implements CrudController<Customer> {
+public class OrderController implements CrudController<Order> {
 
 	public static final Logger LOGGER = LogManager.getLogger();
 	private Utils utils;
 
-	private CustomerDAO customerDAO;
+	private OrderDAO orderDAO;
 
 
-	public CustomerController(CustomerDAO customerDAO, Utils utils) {
+	public OrderController(OrderDAO orderDAO) {
 		super();
-		this.customerDAO = customerDAO;
-		this.utils = utils;
+		this.orderDAO = orderDAO;
 	}
 
 	/**
 	 * Reads all customers to the logger
 	 */
 	@Override
-	public List<Customer> readAll() {
-		List<Customer> customers = customerDAO.readAll();
-		for (Customer customer : customers) {
-			LOGGER.info(customer);
+	public List<Order> readAll() {
+		List<Order> orders = orderDAO.readAll();
+		for (Order order : orders) {
+			LOGGER.info(order);
 		}
-		return customers;
+		return orders;
 	}
 
 	/**
 	 * Creates a customer by taking in user input
 	 */
 	@Override
-	public Customer create() {
+	public Order create() {
 		LOGGER.info("Please enter a first name");
 		String firstName = utils.getString();
 		LOGGER.info("Please enter a surname");
 		String surname = utils.getString();
-		Customer customer = customerDAO.create(new Customer(firstName, surname));
+		Order order = orderDAO.create(new Order());
 		LOGGER.info("Customer created");
-		return customer;
+		return order;
 	}
 
 	/**
 	 * Updates an existing customer by taking in user input
 	 */
 	@Override
-	public Customer update() {
+	public Order update() {
 		LOGGER.info("Please enter the id of the customer you would like to update");
 		Long id = utils.getLong();
 		LOGGER.info("Please enter a first name");
 		String firstName = utils.getString();
 		LOGGER.info("Please enter a surname");
 		String surname = utils.getString();
-		Customer customer = customerDAO.update(new Customer(id, firstName, surname));
+		Order order = orderDAO.update(new Order());
 		LOGGER.info("Customer Updated");
-		return customer;
+		return order;
 	}
 
 	/**
@@ -78,7 +79,7 @@ public class CustomerController implements CrudController<Customer> {
 	public int delete() {
 		LOGGER.info("Please enter the id of the customer you would like to delete");
 		Long id = utils.getLong();
-		return customerDAO.delete(id);
+		return orderDAO.delete(id);
 	}
 
 }
