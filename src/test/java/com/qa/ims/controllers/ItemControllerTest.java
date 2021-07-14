@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -57,8 +58,8 @@ public class ItemControllerTest {
 
 	@Test
 	public void testReadAll() {
-		List<Item> items = new ArrayList<>();
-		items.add(new Item(1L, "Potion", Money.pounds(3.4), 20));
+		HashMap<Long, Item> items = new HashMap<>();
+		items.put(1L, new Item(1L, "Potion", Money.pounds(3.4), 20));
 
 		Mockito.when(dao.readAll()).thenReturn(items);
 

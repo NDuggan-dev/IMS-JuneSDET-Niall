@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -39,20 +40,20 @@ public class ItemDAO implements Dao<Item> {
 	 * @return A list of customers
 	 */
 	@Override
-	public List<Item> readAll() {
+	public HashMap<Long, Item> readAll() {
 		try (Connection connection = dataSource.getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM items");) {
-			List<Item> items = new ArrayList<>();
+			HashMap<Long, Item> items = new HashMap<>();
 			while (resultSet.next()) {
-				items.add(modelFromResultSet(resultSet));
+				items.put(modelFromResultSet(resultSet).getItemId(), modelFromResultSet(resultSet));
 			}
 			return items;
 		} catch (SQLException e) {
 			LOGGER.debug(e);
 			LOGGER.error(e.getMessage());
 		}
-		return new ArrayList<>();
+		return new HashMap<>();
 	}
 
 	public Item readLatest() {
@@ -148,5 +149,7 @@ public class ItemDAO implements Dao<Item> {
 		}
 		return 0;
 	}
+	
+	
 
 }

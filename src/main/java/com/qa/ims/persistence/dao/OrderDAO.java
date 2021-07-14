@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
@@ -22,15 +24,17 @@ import com.qa.ims.utils.DBUtilsPool;
 public class OrderDAO implements Dao<Order> {
 
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final ItemDAO itemDAO = new ItemDAO();
 	//private static final DataSource dataSource = DBUtilsPool.getDataSource();
 
 	
 	@Override
 	public Order modelFromResultSet(ResultSet resultSet) throws SQLException {
-		Long id = resultSet.getLong("orders_id");
+		Long id = resultSet.getLong("order_id");
 		Long customerId = resultSet.getLong("customer_id");
 		Date orderDate = resultSet.getDate("order_date");
-		return new Order(id, customerId, orderDate, null);
+		List<Item> itemList = itemMapToList(readItemMap(id));
+		return new Order(id, customerId, orderDate, itemList);
 	}
 
 	/**
@@ -39,20 +43,20 @@ public class OrderDAO implements Dao<Order> {
 	 * @return A list of customers
 	 */
 	@Override
-	public List<Order> readAll() {
+	public HashMap<Long, Order> readAll() {
 		try (Connection connection = DBUtilsPool.getDataSource().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM orders");) {
-			List<Order> orders = new ArrayList<>();
+			HashMap<Long, Order> orders = new HashMap<>();
 			while (resultSet.next()) {
-				orders.add(modelFromResultSet(resultSet));
+				orders.put(modelFromResultSet(resultSet).getId(), modelFromResultSet(resultSet));
 			}
 			return orders;
 		} catch (SQLException e) {
 			LOGGER.debug(e);
 			LOGGER.error(e.getMessage());
 		}
-		return new ArrayList<>();
+		return new HashMap<>();
 	}
 
 	public Order readLatest() {
@@ -80,7 +84,7 @@ public class OrderDAO implements Dao<Order> {
 						.prepareStatement("INSERT INTO orders(customer_id) VALUES (?)");) {
 			statement.setLong(1, order.getCustomerId());
 			statement.executeUpdate();
-			return readLatest();
+			readLatest();
 		} catch (Exception e) {
 			LOGGER.debug(e);
 			LOGGER.error(e.getMessage());
@@ -88,19 +92,9 @@ public class OrderDAO implements Dao<Order> {
 		List<Item> items = order.getItemList();
 		Order thisOrder = readLatest();
 		for(Item item : items) {
-			try (Connection connection = DBUtilsPool.getDataSource().getConnection();
-					PreparedStatement statement = connection
-							.prepareStatement("INSERT INTO order_items(order_id, item_id) VALUES (?, ?)");) {
- 				statement.setLong(1, thisOrder.getId());
-				statement.setLong(2, item.getItemId());
-				statement.executeUpdate();
-				return readLatest();
-			} catch (Exception e) {
-				LOGGER.debug(e);
-				LOGGER.error(e.getMessage());
-			} 	
+			addItemToOrder(thisOrder, item);
 		}
-		return null;
+		return readLatest();
 	}
 
 	@Override
@@ -130,9 +124,8 @@ public class OrderDAO implements Dao<Order> {
 	public Order update(Order order) {
 		try (Connection connection = DBUtilsPool.getDataSource().getConnection();
 				PreparedStatement statement = connection
-						.prepareStatement("UPDATE orders SET order_id = ?, customer_id = ? WHERE customer_id = ?");) {
+						.prepareStatement("UPDATE orders SET order_date = now() WHERE order_id = ?");) {
 			statement.setLong(1, order.getId());
-			statement.setLong(2, order.getCustomerId());
 			statement.executeUpdate();
 			return read(order.getId());
 		} catch (Exception e) {
@@ -149,15 +142,98 @@ public class OrderDAO implements Dao<Order> {
 	 */
 	@Override
 	public int delete(long id) {
+        deleteFromOrderItems(id);
+        try (Connection connection = DBUtilsPool.getDataSource().getConnection();
+                PreparedStatement statement = connection.prepareStatement("DELETE FROM orders WHERE order_id = ?");) {
+            statement.setLong(1, id);
+            return statement.executeUpdate();
+        } catch (Exception e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
+        return 0;
+    }
+       
+    public int deleteFromOrderItems(long id) {
+        try (Connection connection = DBUtilsPool.getDataSource().getConnection();
+                PreparedStatement statement = connection.prepareStatement("DELETE FROM orders_items WHERE order_id = ?");) {
+            statement.setLong(1, id);
+            return statement.executeUpdate();
+        } catch (Exception e) {
+            LOGGER.debug(e);
+            LOGGER.error(e.getMessage());
+        }
+        return 0;
+    }
+
+
+	public Order addItemToOrder(Order thisOrder, Item item) {
 		try (Connection connection = DBUtilsPool.getDataSource().getConnection();
-				PreparedStatement statement = connection.prepareStatement("DELETE FROM customers WHERE customer_id = ?");) {
-			statement.setLong(1, id);
-			return statement.executeUpdate();
+				PreparedStatement statement = connection
+						.prepareStatement("INSERT INTO orders_items(order_id, item_id) VALUES (?, ?)");) {
+				statement.setLong(1, thisOrder.getId());
+			statement.setLong(2, item.getItemId());
+			statement.executeUpdate();
+			update(thisOrder);
+			return read(thisOrder.getId());
 		} catch (Exception e) {
 			LOGGER.debug(e);
 			LOGGER.error(e.getMessage());
-		}
-		return 0;
+		} 
+		return null;
 	}
-
+	
+	public HashMap<Long, Item> readItemMap(Long orderId){
+		HashMap<Long, Item> itemMap = new HashMap<>();
+		try (Connection connection = DBUtilsPool.getDataSource().getConnection();
+			PreparedStatement statement = 
+			connection.prepareStatement("SELECT * FROM orders_items WHERE order_id = ?");) {
+			statement.setLong(1, orderId);
+				try (ResultSet resultSet = statement.executeQuery();) {
+				return listItemFromResultSet(resultSet);
+				}
+			}catch (Exception e) {
+				LOGGER.debug(e);
+				LOGGER.error(e.getMessage()); 
+		}
+		return itemMap;
+	}
+	
+	
+	public HashMap<Long, Item> listItemFromResultSet(ResultSet resultSet){
+		HashMap<Long, Item> itemList = new HashMap<>();
+		try {
+			while(resultSet.next()) {
+					Item item = itemDAO.read(resultSet.getLong("item_id"));
+					itemList.put(resultSet.getLong("orders_items_id"), item);
+			}
+		} catch (SQLException e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		}
+		return itemList;
+	}
+	
+	public Order deleteItemFromOrder(Long id, Order thisOrder) {
+		try (Connection connection = DBUtilsPool.getDataSource().getConnection();
+				PreparedStatement statement = connection
+						.prepareStatement("DELETE FROM orders_items WHERE orders_items_id = ?");) {
+				statement.setLong(1, id);
+			statement.executeUpdate();
+			update(thisOrder);
+			return read(thisOrder.getId());
+		} catch (Exception e) {
+			LOGGER.debug(e);
+			LOGGER.error(e.getMessage());
+		} 
+		return null;
+	}
+	
+	public List<Item> itemMapToList(HashMap<Long, Item> itemMap){
+		List<Item> itemList = new ArrayList<Item>();
+		for(Entry<Long, Item> item : itemMap.entrySet()) {
+			itemList.add(item.getValue());
+		}	
+		return itemList;
+	}
 }

@@ -3,6 +3,7 @@ package com.qa.ims.controllers;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -45,8 +46,8 @@ public class CustomerControllerTest {
 
 	@Test
 	public void testReadAll() {
-		List<Customer> customers = new ArrayList<>();
-		customers.add(new Customer(1L, "jordan", "harrison"));
+		HashMap<Long, Customer> customers = new HashMap<>();
+		customers.put(1L, new Customer(1L, "jordan", "harrison"));
 
 		Mockito.when(dao.readAll()).thenReturn(customers);
 
