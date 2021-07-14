@@ -1,13 +1,18 @@
 package com.qa.ims.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.qa.ims.persistence.dao.CustomerDAO;
+import com.qa.ims.persistence.dao.ItemDAO;
 import com.qa.ims.persistence.dao.OrderDAO;
 import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.persistence.domain.Order;
 import com.qa.ims.utils.Utils;
 
@@ -21,21 +26,24 @@ public class OrderController implements CrudController<Order> {
 	private Utils utils;
 
 	private OrderDAO orderDAO;
+	private ItemDAO itemDAO;
 
 
-	public OrderController(OrderDAO orderDAO) {
+	public OrderController(OrderDAO orderDAO, Utils utils, ItemDAO itemDAO) {
 		super();
 		this.orderDAO = orderDAO;
+		this.utils = utils;
+		this.itemDAO = itemDAO;
 	}
 
 	/**
 	 * Reads all customers to the logger
 	 */
 	@Override
-	public List<Order> readAll() {
-		List<Order> orders = orderDAO.readAll();
-		for (Order order : orders) {
-			LOGGER.info(order);
+	public HashMap<Long, Order> readAll() {
+		HashMap<Long, Order> orders = orderDAO.readAll();
+		for(Entry<Long, Order> order : orders.entrySet()) {
+			LOGGER.info(order.getValue());
 		}
 		return orders;
 	}
@@ -45,28 +53,44 @@ public class OrderController implements CrudController<Order> {
 	 */
 	@Override
 	public Order create() {
-		LOGGER.info("Please enter a first name");
-		String firstName = utils.getString();
-		LOGGER.info("Please enter a surname");
-		String surname = utils.getString();
-		Order order = orderDAO.create(new Order());
-		LOGGER.info("Customer created");
+		LOGGER.info("Please enter a customer ID");
+		Long customerId = utils.getLong();
+		HashMap<Long, Item> catalogue = catalogue();
+		List<Item> basket = createBasket(catalogue); 
+		Order order = orderDAO.create(new Order(customerId, basket));
+		LOGGER.info("Order created");
 		return order;
 	}
 
 	/**
-	 * Updates an existing customer by taking in user input
+	 * Updates an existing order by taking in user input
 	 */
 	@Override
 	public Order update() {
-		LOGGER.info("Please enter the id of the customer you would like to update");
+		boolean add = false;
+		LOGGER.info("Please enter the id of the order you would like to update");
 		Long id = utils.getLong();
-		LOGGER.info("Please enter a first name");
-		String firstName = utils.getString();
-		LOGGER.info("Please enter a surname");
-		String surname = utils.getString();
-		Order order = orderDAO.update(new Order());
-		LOGGER.info("Customer Updated");
+		Order order = orderDAO.read(id);
+		LOGGER.info("Would you like to add items");
+		boolean addItem = utils.getYesNo();
+		List<Item> basket = new ArrayList<>();
+		if(addItem) {
+			HashMap<Long, Item> catalogue = catalogue();
+			basket = createBasket(catalogue);
+			for(Item item : basket) {
+				order = orderDAO.addItemToOrder(order, item);
+			}
+		}
+		boolean deleteItems = false;
+		do {
+			LOGGER.info("Would you like to delete items");
+			deleteItems = utils.getYesNo();
+			listItems(orderDAO.readItemMap(order.getId()));
+			LOGGER.info("Please enter item ref of item you would like to delete");
+			Long deleteId = utils.getLong();
+			order = orderDAO.deleteItemFromOrder(deleteId, order);
+		}while(!deleteItems);
+		LOGGER.info("Order Updated");
 		return order;
 	}
 
@@ -77,9 +101,38 @@ public class OrderController implements CrudController<Order> {
 	 */
 	@Override
 	public int delete() {
-		LOGGER.info("Please enter the id of the customer you would like to delete");
+		LOGGER.info("Please enter the id of the order you would like to delete");
 		Long id = utils.getLong();
 		return orderDAO.delete(id);
 	}
-
+	
+	public List<Item> createBasket(HashMap<Long, Item> catalogue){
+		boolean moreItems = true;
+		List<Item> basket = new ArrayList<Item>();
+		
+		do {
+			LOGGER.info("Please select item by ID");
+			Long selectedItemID =  utils.getLong();
+			Item selectedItem = catalogue.get(selectedItemID);
+			basket.add(selectedItem);
+			LOGGER.info("Would you like to add another item? (Yes/No)");
+			moreItems = utils.getYesNo();
+		}while(moreItems);
+		
+		return basket;
+	}
+	
+	public HashMap<Long, Item> catalogue(){
+		HashMap<Long, Item> catalogue = itemDAO.readAll();
+		for(Entry<Long, Item> item : catalogue.entrySet()) {
+			LOGGER.info(item.getValue().toString());
+		}
+		return catalogue;
+	}
+	
+	public void listItems(HashMap<Long, Item> itemList) {
+		for(Entry<Long, Item> item : itemList.entrySet()) {
+			LOGGER.info("Item Ref: " + item.getKey() + " " + item.getValue().toString());
+		}	
+	}
 }

@@ -80,7 +80,29 @@ public class Utils {
 				LOGGER.info("Error - Please enter a value");
 			}
 		} while(money == null);
-		return money;
+		return money;	
+	}
+	public boolean getYesNo() {
+		String input = null;
+		boolean correctInput = false;
+		boolean yesNo = false;
+		do {
+			try {
+				input = getString();
+				if(input.equalsIgnoreCase("yes")) {
+					yesNo = true;
+					correctInput = true;
+				}else if(input.equals("no")) {
+					yesNo = false;
+					correctInput = true;
+				} else {
+					LOGGER.info("Error - Please enter yes or no");
+				}
+			} catch (Exception nfe) {
+				LOGGER.info("Error - Please enter yes or no");
+			}
+		} while (!correctInput);
+		return yesNo;
 		
 	}
 

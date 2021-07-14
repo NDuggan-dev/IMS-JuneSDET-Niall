@@ -1,12 +1,15 @@
 package com.qa.ims.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.persistence.domain.Money;
 import com.qa.ims.utils.Utils;
@@ -33,9 +36,9 @@ public class ItemController implements CrudController<Item> {
 	 * Reads all customers to the logger
 	 */
 	@Override
-	public List<Item> readAll() {
-		List<Item> items = itemDAO.readAll();
-		for (Item item : items) {
+	public HashMap<Long, Item> readAll() {
+		HashMap<Long, Item> items = itemDAO.readAll();
+		for (Entry<Long, Item> item : items.entrySet()) {
 			LOGGER.info(item);
 		}
 		return items;

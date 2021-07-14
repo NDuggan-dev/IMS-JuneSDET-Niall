@@ -1,6 +1,8 @@
 package com.qa.ims.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,9 +33,9 @@ public class CustomerController implements CrudController<Customer> {
 	 * Reads all customers to the logger
 	 */
 	@Override
-	public List<Customer> readAll() {
-		List<Customer> customers = customerDAO.readAll();
-		for (Customer customer : customers) {
+	public HashMap<Long, Customer> readAll() {
+		HashMap<Long, Customer> customers = customerDAO.readAll();
+		for (Entry<Long, Customer> customer : customers.entrySet()) {
 			LOGGER.info(customer);
 		}
 		return customers;

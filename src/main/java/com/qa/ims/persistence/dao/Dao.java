@@ -2,11 +2,12 @@ package com.qa.ims.persistence.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 public interface Dao<T> {
 
-	List<T> readAll();
+	HashMap<Long, T> readAll();
 	
 	T read(Long id);
 

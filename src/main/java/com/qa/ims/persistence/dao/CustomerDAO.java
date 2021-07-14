@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -36,20 +37,20 @@ public class CustomerDAO implements Dao<Customer> {
 	 * @return A list of customers
 	 */
 	@Override
-	public List<Customer> readAll() {
+	public HashMap<Long, Customer> readAll() {
 		try (Connection connection = dataSource.getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM customers");) {
-			List<Customer> customers = new ArrayList<>();
+			HashMap<Long, Customer> customers = new HashMap<>();
 			while (resultSet.next()) {
-				customers.add(modelFromResultSet(resultSet));
+				customers.put(modelFromResultSet(resultSet).getId(), modelFromResultSet(resultSet));
 			}
 			return customers;
 		} catch (SQLException e) {
 			LOGGER.debug(e);
 			LOGGER.error(e.getMessage());
 		}
-		return new ArrayList<>();
+		return new HashMap<>();
 	}
 
 	public Customer readLatest() {
