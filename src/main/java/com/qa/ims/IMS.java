@@ -24,7 +24,7 @@ public class IMS {
 	private Utils utils;
 
 	public IMS() {
-		this.utils = new Utils();
+		this.utils = Utils.getInstance();
 		final CustomerDAO custDAO = new CustomerDAO();
 		final ItemDAO itemDAO = new ItemDAO();
 		final OrderDAO orderDAO = new OrderDAO();

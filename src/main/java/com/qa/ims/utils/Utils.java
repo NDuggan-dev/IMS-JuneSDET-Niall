@@ -12,15 +12,19 @@ public class Utils {
 	
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final Scanner scanner;
+	private static Scanner scanner;
 
-	public Utils(Scanner scanner) {
-		super();
-		this.scanner = scanner;
-	}
-
-	public Utils() {
+	private static Utils util = null;
+	
+	private Utils() {
 		scanner = new Scanner(System.in);
+}
+	
+	public static Utils getInstance() {
+		if(util == null) {
+			util = new Utils();
+		}
+		return util;
 	}
 
 	public Long getLong() {
