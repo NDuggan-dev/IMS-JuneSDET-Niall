@@ -15,9 +15,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 The following software is neccessary in order to use 
 Java 1.8 https://www.java.com/en/download
+
 MySql https://dev.mysql.com/downloads/installer
 
 **other IDE's can be used**
+
 Eclipse https://www.eclipse.org/downloads/packages/release/2021-06/r/eclipse-ide-java-
 
 
