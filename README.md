@@ -15,19 +15,19 @@ See deployment for notes on how to deploy the project on a live system.
 ### Prerequisites
 
 The following software is neccessary in order to use 
-*Java 1.8 https://www.java.com/en/download
-*MySql https://dev.mysql.com/downloads/installer
-*Eclipse https://www.eclipse.org/downloads/packages/release/2021-06/r/eclipse-ide-java-
+* Java 1.8 https://www.java.com/en/download
+* MySql https://dev.mysql.com/downloads/installer
+* Eclipse https://www.eclipse.org/downloads/packages/release/2021-06/r/eclipse-ide-java-
 **other IDE's can be used**
 
 ### Installing
 
-*First make sure your environement is set up with all software that is neccassery, links to prerequisites has been proveded above.
-*Then you should clone the project to a local repository or fork it to a remote repositiory.
-*In order to clone to a local repository create a folder on your local machine. 
-*Open up a git bash cmd prompt - right click inside folder select git bash here
-*Type in command - git init
-*Type in command - git clone https://github.com/NDuggan-dev/IMS-JuneSDET-Niall.git
+* First make sure your environement is set up with all software that is neccassery, links to prerequisites has been proveded above.
+* Then you should clone the project to a local repository or fork it to a remote repositiory.
+* In order to clone to a local repository create a folder on your local machine. 
+* Open up a git bash cmd prompt - right click inside folder select git bash here
+* Type in command - git init
+* Type in command - git clone https://github.com/NDuggan-dev/IMS-JuneSDET-Niall.git
 
 ## Running the tests
 
@@ -53,15 +53,15 @@ We use [SemVer](http://semver.org/) for versioning.
 
 This project is licensed under the MIT license - see the [LICENSE.md](LICENSE.md) file for details 
 
-*For help in [Choosing a license](https://choosealicense.com/)*
+* For help in [Choosing a license](https://choosealicense.com/)*
 
 ## Acknowledgments
 
-*Huge thanks to my team mates Simon White and Megan Crouch.
-*Huge thanks to the course lecturers Alan and Pawel for helping me overcome my blockers.
-*Huge thanks to the QA team all round.
+* Huge thanks to my team mates Simon White and Megan Crouch.
+* Huge thanks to the course lecturers Alan and Pawel for helping me overcome my blockers.
+* Huge thanks to the QA team all round.
 Books 
-*Testing Java Microservices: Using Arquillian, Hoverfly, Assertj, Junit, Selenium, and Mockito 1 by Soto Bueno, Alex, Porter, Jason, Gumbrecht (Autoren), Andy (ISBN: 9781617292897)
-*UML for Java¿ Programmers (Robert C. Martin) (ISB: 978-0131428485)
+* Testing Java Microservices: Using Arquillian, Hoverfly, Assertj, Junit, Selenium, and Mockito 1 by Soto Bueno, Alex, Porter, Jason, Gumbrecht (Autoren), Andy (ISBN: 9781617292897)
+* UML for Java¿ Programmers (Robert C. Martin) (ISB: 978-0131428485)
 
 
