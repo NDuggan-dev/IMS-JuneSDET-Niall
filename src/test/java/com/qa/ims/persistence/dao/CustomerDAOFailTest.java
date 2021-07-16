@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qa.ims.persistence.CustomerBuilder;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.DBUtilsPool;
 
@@ -24,7 +25,8 @@ public class CustomerDAOFailTest {
 
 	@Test
 	public void testCreate() {
-		final Customer created = new Customer(2L, "chris", "perrins");
+		final Customer created = 
+				new CustomerBuilder().id(2L).firstName("chris").surname("perrins").build(); 
 		assertNull(DAO.create(created));
 	}
 
@@ -46,7 +48,8 @@ public class CustomerDAOFailTest {
 
 	@Test
 	public void testUpdate() {
-		final Customer updated = new Customer(1L, "chris", "perrins");
+		final Customer updated = 
+				new CustomerBuilder().id(1L).firstName("chris").surname("perrins").build();
 		assertNull(DAO.update(updated));
 
 	}

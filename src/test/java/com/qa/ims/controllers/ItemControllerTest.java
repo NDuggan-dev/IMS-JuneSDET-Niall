@@ -16,11 +16,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.qa.ims.controller.CustomerController;
 import com.qa.ims.controller.ItemController;
+import com.qa.ims.persistence.ItemBuilder;
+import com.qa.ims.persistence.Money;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.dao.ItemDAO;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
-import com.qa.ims.persistence.domain.Money;
 import com.qa.ims.utils.Utils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,14 +35,15 @@ public class ItemControllerTest {
 
 	@InjectMocks
 	private ItemController controller;
-	
+	 
 
 	@Test
 	public void testCreate() {
 		final String NAME = "Owl";
 		final Money VALUE = Money.pounds(34.55);
 		final Integer QUANTITY = 20;
-		final Item created = new Item(NAME, VALUE, QUANTITY);
+		final Item created = 
+				new ItemBuilder().name(NAME).value(VALUE).quanity(QUANTITY).build();
 
 		Mockito.when(utils.getString()).thenReturn(NAME);
 		Mockito.when(utils.getValue()).thenReturn(VALUE);
@@ -60,7 +62,7 @@ public class ItemControllerTest {
 	@Test
 	public void testReadAll() {
 		HashMap<Long, Item> items = new HashMap<>();
-		items.put(1L, new Item(1L, "Potion", Money.pounds(3.4), 20));
+		items.put(1L, new ItemBuilder().itemId(1L).name("Potion").value(Money.pounds(3.4)).quanity(20).build());
 
 		Mockito.when(dao.readAll()).thenReturn(items);
 
@@ -71,7 +73,7 @@ public class ItemControllerTest {
 
 	@Test
 	public void testUpdate() {
-		Item updated = new Item(1L, "Potion", Money.pounds(3.4), 20);
+		Item updated = new ItemBuilder().itemId(1L).name("Potion").value(Money.pounds(3.4)).quanity(20).build();
 
 		Mockito.when(this.utils.getLong()).thenReturn(1L);
 		Mockito.when(this.utils.getString()).thenReturn(updated.getName());

@@ -1,4 +1,4 @@
-package com.qa.ims.persistence.domain;
+package com.qa.ims.persistence;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

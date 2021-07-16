@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qa.ims.persistence.Money;
 import com.qa.ims.persistence.domain.Item;
-import com.qa.ims.persistence.domain.Money;
 import com.qa.ims.utils.DBUtilsPool;
 
 

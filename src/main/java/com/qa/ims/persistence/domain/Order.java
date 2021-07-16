@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.qa.ims.persistence.Money;
+
 public class Order {
 	private Long id;
 	private Long customerId;
@@ -14,6 +16,7 @@ public class Order {
 	private Money totalCost;
 	
 	public Order() {
+		super();
 		this.itemList = new ArrayList<Item>();
 	}
 	public Order(Long id, Long customerId, Date orderDate, List<Item> itemList) {
@@ -24,27 +27,6 @@ public class Order {
 		this.itemList = itemList;
 		this.totalCost = getTotalCost();
 	}
-	public Order(Long id, Long customerId, List<Item> itemList) {
-		super();
-		this.id = id;
-		this.customerId = customerId;
-		this.itemList = itemList;
-		this.totalCost = getTotalCost();
-	}
-	public Order(Long customerId, List<Item> itemList) {
-		super();
-		this.customerId = customerId;
-		this.itemList = itemList;
-		this.totalCost = getTotalCost();
-	}
-	public Order(Long id, Long customerId) {
-		super();
-		this.id = id; 
-		this.customerId = customerId;
-		this.totalCost = getTotalCost();
-	}
-
-
 	public long getId() {
 		return id;
 	}
@@ -110,9 +92,5 @@ public class Order {
 		return "Order [id=" + id + ", customerId=" + customerId + ", orderDate=" + orderDate + ", itemList=" + itemList
 				+ ", totalCost=" + totalCost + "]";
 	}
-	
-	
-	
-	
-	
+		
 }

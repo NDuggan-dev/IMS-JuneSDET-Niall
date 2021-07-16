@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qa.ims.persistence.CustomerBuilder;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.DBUtilsPool;
 
@@ -25,20 +26,20 @@ public class CustomerDAOTest {
 
 	@Test
 	public void testCreate() {
-		final Customer created = new Customer(2L, "chris", "perrins");
+		final Customer created = new CustomerBuilder().id(2L).firstName("chris").surname("perrins").build();
 		assertEquals(created, DAO.create(created));
 	}
-
+ 
 	@Test
 	public void testReadAll() {
 		HashMap<Long, Customer> expected = new HashMap<>();
-		expected.put(1L, new Customer(1L, "jordan", "harrison"));
+		expected.put(1L, new CustomerBuilder().id(1L).firstName("jordan").surname("harrison").build());
 		assertEquals(expected, DAO.readAll()); 
 	}
  
 	@Test
 	public void testReadLatest() {
-		Customer expected = new Customer(1L, "jordan", "harrison");
+		Customer expected = new CustomerBuilder().id(1L).firstName("jordan").surname("harrison").build();
 		assertEquals(expected, DAO.readLatest()); 
 		
 	}
@@ -46,12 +47,12 @@ public class CustomerDAOTest {
 	@Test
 	public void testRead() {
 		final long ID = 1L;
-		assertEquals(new Customer(ID, "jordan", "harrison"), DAO.read(ID));
+		assertEquals(new CustomerBuilder().id(1L).firstName("jordan").surname("harrison").build(), DAO.read(ID));
 	}
 
 	@Test
 	public void testUpdate() {
-		final Customer updated = new Customer(1L, "chris", "perrins");
+		final Customer updated =  new CustomerBuilder().id(1L).firstName("chris").surname("perrins").build();
 		assertEquals(updated, DAO.update(updated));
 
 	}

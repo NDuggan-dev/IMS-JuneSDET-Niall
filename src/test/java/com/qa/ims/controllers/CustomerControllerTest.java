@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.qa.ims.controller.CustomerController;
+import com.qa.ims.persistence.CustomerBuilder;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.Utils;
@@ -35,8 +36,8 @@ public class CustomerControllerTest {
 	@Test
 	public void testCreate() {
 		final String F_NAME = "barry", L_NAME = "scott";
-		final Customer created = new Customer(F_NAME, L_NAME);
-
+		final Customer created = new CustomerBuilder().firstName(F_NAME).surname(L_NAME).build(); 
+ 
 		Mockito.when(utils.getString()).thenReturn(F_NAME, L_NAME);
 		Mockito.when(dao.create(created)).thenReturn(created);
 
@@ -45,11 +46,11 @@ public class CustomerControllerTest {
 		Mockito.verify(utils, Mockito.times(2)).getString();
 		Mockito.verify(dao, Mockito.times(1)).create(created);
 	}
-
+ 
 	@Test
 	public void testReadAll() {
 		HashMap<Long, Customer> customers = new HashMap<>();
-		customers.put(1L, new Customer(1L, "jordan", "harrison"));
+		customers.put(1L, new CustomerBuilder().id(1L).firstName("jordan").surname("harrison").build());
 
 		Mockito.when(dao.readAll()).thenReturn(customers);
 
@@ -60,7 +61,7 @@ public class CustomerControllerTest {
 
 	@Test
 	public void testUpdate() {
-		Customer updated = new Customer(1L, "chris", "perrins");
+		Customer updated = new CustomerBuilder().id(1L).firstName("chris").surname("perrins").build();
 
 		Mockito.when(this.utils.getLong()).thenReturn(1L);
 		Mockito.when(this.utils.getString()).thenReturn(updated.getFirstName(), updated.getSurname());
