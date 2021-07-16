@@ -1,5 +1,5 @@
-Coverage: 34%
-# Project Title
+
+# IMS Project
 
 Inventory Management System(IMS) project.
 The aim of this project was to test the developers knowledge in the following modules:
