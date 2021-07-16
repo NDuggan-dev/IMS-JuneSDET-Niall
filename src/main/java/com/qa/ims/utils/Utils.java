@@ -6,7 +6,7 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.qa.ims.persistence.domain.Money;
+import com.qa.ims.persistence.Money;
 
 public class Utils {
 	

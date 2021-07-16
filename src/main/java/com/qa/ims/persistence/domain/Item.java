@@ -2,6 +2,8 @@ package com.qa.ims.persistence.domain;
 
 import java.util.Objects;
 
+import com.qa.ims.persistence.Money;
+
 public class Item {
 	private Long itemId;
 	private String name;
@@ -16,12 +18,6 @@ public class Item {
 		this.quantity = quantity;
 	}
 
-	public Item(String name, Money value, int quantity) {
-		super();
-		this.name = name;
-		this.value = value;
-		this.quantity = quantity;
-	}
 
 	public Item() {
 		super();

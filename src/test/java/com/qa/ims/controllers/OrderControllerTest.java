@@ -2,7 +2,6 @@ package com.qa.ims.controllers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import java.util.ArrayList;
@@ -20,12 +19,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.qa.ims.controller.CustomerController;
 import com.qa.ims.controller.OrderController;
+import com.qa.ims.persistence.ItemBuilder;
+import com.qa.ims.persistence.Money;
+import com.qa.ims.persistence.OrderBuilder;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.dao.ItemDAO;
 import com.qa.ims.persistence.dao.OrderDAO;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
-import com.qa.ims.persistence.domain.Money;
 import com.qa.ims.persistence.domain.Order;
 import com.qa.ims.utils.Utils;
 
@@ -50,26 +51,17 @@ public class OrderControllerTest {
 	@InjectMocks
 	private OrderController controller;
 	
-	@Before
-	public void createOrder() {
-		final HashMap<Long, Item> CATALOGUE = new HashMap<>();
-		final Long ID = 1L;
-		final Item ITEM = new Item(1L, "Deluminator", Money.pounds(300), 20);
-		final List<Item> BASKET = new ArrayList<Item>();
-		BASKET.add(ITEM);
-		final Order created = new Order(ID, BASKET);
-		CATALOGUE.put(1L, ITEM);
-		
-	}
+
 
 	@Test
 	public void testCreate() {
 		final HashMap<Long, Item> CATALOGUE = new HashMap<>();
 		final Long ID = 1L;
-		final Item ITEM = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		final Item ITEM = new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
+				
 		final List<Item> BASKET = new ArrayList<Item>();
 		BASKET.add(ITEM);
-		final Order created = new Order(ID, BASKET);
+		final Order created = new OrderBuilder().customerId(ID).itemList(BASKET).build();
 		CATALOGUE.put(1L, ITEM); 
 
 		Mockito.when(utils.getLong()).thenReturn(ID);
@@ -90,10 +82,10 @@ public class OrderControllerTest {
 	public void testReadAll() {
 		final HashMap<Long, Order> MAP = new HashMap<>();
 		final Long ID = 1L;
-		final Item ITEM = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		final Item ITEM = new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
 		final List<Item> BASKET = new ArrayList<Item>();
 		BASKET.add(ITEM);
-		final Order CREATED = new Order(ID, BASKET);
+		final Order CREATED =  new OrderBuilder().id(ID).addItemToList(ITEM).build();
 		MAP.put(1L, CREATED);
 		
 		Mockito.when(dao.readAll()).thenReturn(MAP);
@@ -106,15 +98,13 @@ public class OrderControllerTest {
 	@Test
 	public void testUpdate() {
 		final Long ID = 1L;
-		final Item ITEM = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		final Item ITEM =  new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
 		final List<Item> BASKET = new ArrayList<Item>();
 		BASKET.add(ITEM);
-		final Order EXPECTED = new Order(ID, BASKET);
+		final Order EXPECTED =  new OrderBuilder().id(ID).addItemToList(ITEM).build();
 
 		Mockito.when(utils.getLong()).thenReturn(ID);
 		Mockito.when(dao.read(1L)).thenReturn(EXPECTED);
-		Mockito.when(orderController.addItemsToOrder(Mockito.any(Order.class))).thenReturn(EXPECTED);
-		Mockito.when(orderController.deleteItemsFromOrder(Mockito.any(Order.class))).thenReturn(EXPECTED);
 		
 		assertEquals(EXPECTED, controller.update());
 
@@ -139,7 +129,7 @@ public class OrderControllerTest {
 	public void testListItems() {
 		final HashMap<Long, Item> expected = new HashMap<>();
 		final Long ID = 1L;
-		final Item ITEM = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		final Item ITEM =  new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
 		expected.put(1L, ITEM);
 
 
@@ -147,5 +137,27 @@ public class OrderControllerTest {
 
 		assertEquals(expected, result);
 	}
+	
+	@Test
+	public void testAddItemsToOrder() {
+		//when null
+		Order NULLORDER = null;
+		assertNull(controller.addItemsToOrder(NULLORDER));
+		
+		final long ID = 1L;
+		final List<Item> ITEMS = new ArrayList<>();
+		final Item ITEM =  new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
+		ITEMS.add(ITEM);
+		Order ORDER =  new OrderBuilder().id(ID).addItemToList(ITEM).build();
+		final HashMap<Long, Item> HASH = new HashMap<>();
+		HASH.put(1L, ITEM);
+		
+		Mockito.when(utils.getYesNo()).thenReturn(true);
+		
+		assertEquals(ORDER, controller.addItemsToOrder(ORDER));
+
+		Mockito.verify(utils, Mockito.times(1)).getYesNo();
+	}
+	
 
 }

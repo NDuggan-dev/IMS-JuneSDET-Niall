@@ -14,8 +14,9 @@ import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qa.ims.persistence.ItemBuilder;
+import com.qa.ims.persistence.Money;
 import com.qa.ims.persistence.domain.Item;
-import com.qa.ims.persistence.domain.Money;
 import com.qa.ims.utils.DBUtilsPool;
 
 public class ItemDAO implements Dao<Item> {
@@ -31,7 +32,7 @@ public class ItemDAO implements Dao<Item> {
 		Money value = Money.pounds(resultSet.getBigDecimal("value"));
 		Integer quantity = resultSet.getInt("quantity");
 		
-		return new Item(id, name, value, quantity);
+		return new ItemBuilder().itemId(id).name(name).value(value).quanity(quantity).build(); 
 	}
 
 	/**

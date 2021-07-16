@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qa.ims.persistence.CustomerBuilder;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.DBUtilsPool;
 
@@ -28,9 +29,9 @@ public class CustomerDAO implements Dao<Customer> {
 		Long id = resultSet.getLong("customer_id");
 		String firstName = resultSet.getString("forename");
 		String surname = resultSet.getString("surname");
-		return new Customer(id, firstName, surname);
+		return new CustomerBuilder().id(id).firstName(firstName).surname(surname).build();
 	}
-
+ 
 	/**
 	 * Reads all customers from the database
 	 * 

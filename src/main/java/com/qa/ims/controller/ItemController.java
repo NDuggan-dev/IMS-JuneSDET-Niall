@@ -8,10 +8,11 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qa.ims.persistence.ItemBuilder;
+import com.qa.ims.persistence.Money;
 import com.qa.ims.persistence.dao.ItemDAO;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
-import com.qa.ims.persistence.domain.Money;
 import com.qa.ims.utils.Utils;
 
 /**
@@ -55,7 +56,8 @@ public class ItemController implements CrudController<Item> {
 		Money value = utils.getValue();
 		LOGGER.info("Please enter quantity");
 		int quantity = utils.getInteger();
-		Item item = itemDAO.create(new Item(name, value, quantity));
+		Item item = itemDAO.create(
+				new ItemBuilder().name(name).value(value).quanity(quantity).build());
 		LOGGER.info("Item created");
 		return item;
 	}
@@ -73,7 +75,8 @@ public class ItemController implements CrudController<Item> {
 		Money value = utils.getValue();
 		LOGGER.info("Please enter quantity");
 		Integer quantity = utils.getInteger();
-		Item item = itemDAO.update(new Item(id, name, value, quantity));
+		Item item = itemDAO.update(
+				new ItemBuilder().itemId(id).name(name).value(value).quanity(quantity).build());
 		LOGGER.info("Item created");
 		return item;
 	}
