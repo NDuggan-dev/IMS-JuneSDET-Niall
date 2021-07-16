@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ItemController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.controller</a> &gt; <span class="el_source">ItemController.java</span></div><h1>ItemController.java</h1><pre class="source lang-java linenums">package com.qa.ims.controller;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.ItemBuilder;
+import com.qa.ims.persistence.Money;
+import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Item;
+import com.qa.ims.utils.Utils;
+
+/**
+ * Takes in customer details for CRUD functionality
+ *
+ */
+public class ItemController implements CrudController&lt;Item&gt; {
+
+<span class="fc" id="L24">	public static final Logger LOGGER = LogManager.getLogger();</span>
+	private Utils utils;
+
+	private ItemDAO itemDAO;
+
+
+	public ItemController(ItemDAO itemDAO, Utils utils) {
+<span class="fc" id="L31">		super();</span>
+<span class="fc" id="L32">		this.itemDAO = itemDAO;</span>
+<span class="fc" id="L33">		this.utils = utils;</span>
+<span class="fc" id="L34">	}</span>
+
+	/**
+	 * Reads all customers to the logger
+	 */
+	@Override
+	public HashMap&lt;Long, Item&gt; readAll() {
+<span class="fc" id="L41">		HashMap&lt;Long, Item&gt; items = itemDAO.readAll();</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (Entry&lt;Long, Item&gt; item : items.entrySet()) {</span>
+<span class="fc" id="L43">			LOGGER.info(item);</span>
+<span class="fc" id="L44">		}</span>
+<span class="fc" id="L45">		return items;</span>
+	}
+
+	/**
+	 * Creates a customer by taking in user input
+	 */
+	@Override
+	public Item create() {
+<span class="fc" id="L53">		LOGGER.info(&quot;Please enter item name&quot;);</span>
+<span class="fc" id="L54">		String name = utils.getString();</span>
+<span class="fc" id="L55">		LOGGER.info(&quot;Please enter value&quot;);</span>
+<span class="fc" id="L56">		Money value = utils.getValue();</span>
+<span class="fc" id="L57">		LOGGER.info(&quot;Please enter quantity&quot;);</span>
+<span class="fc" id="L58">		int quantity = utils.getInteger();</span>
+<span class="fc" id="L59">		Item item = itemDAO.create(</span>
+<span class="fc" id="L60">				new ItemBuilder().name(name).value(value).quanity(quantity).build());</span>
+<span class="fc" id="L61">		LOGGER.info(&quot;Item created&quot;);</span>
+<span class="fc" id="L62">		return item;</span>
+	}
+
+	/**
+	 * Updates an existing customer by taking in user input
+	 */
+	@Override
+	public Item update() {
+<span class="fc" id="L70">		LOGGER.info(&quot;Please enter item id&quot;);</span>
+<span class="fc" id="L71">		Long id = utils.getLong();</span>
+<span class="fc" id="L72">		LOGGER.info(&quot;Please enter name&quot;);</span>
+<span class="fc" id="L73">		String name = utils.getString();</span>
+<span class="fc" id="L74">		LOGGER.info(&quot;Please enter value&quot;);</span>
+<span class="fc" id="L75">		Money value = utils.getValue();</span>
+<span class="fc" id="L76">		LOGGER.info(&quot;Please enter quantity&quot;);</span>
+<span class="fc" id="L77">		Integer quantity = utils.getInteger();</span>
+<span class="fc" id="L78">		Item item = itemDAO.update(</span>
+<span class="fc" id="L79">				new ItemBuilder().itemId(id).name(name).value(value).quanity(quantity).build());</span>
+<span class="fc" id="L80">		LOGGER.info(&quot;Item created&quot;);</span>
+<span class="fc" id="L81">		return item;</span>
+	}
+
+	/**
+	 * Deletes an existing customer by the id of the customer
+	 * 
+	 * @return
+	 */
+	@Override
+	public int delete() {
+<span class="fc" id="L91">		LOGGER.info(&quot;Please enter the id of the item you would like to delete&quot;);</span>
+<span class="fc" id="L92">		Long id = utils.getLong();</span>
+<span class="fc" id="L93">		return itemDAO.delete(id);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

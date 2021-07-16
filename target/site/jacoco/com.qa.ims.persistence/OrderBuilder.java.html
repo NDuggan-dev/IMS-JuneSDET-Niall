@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.persistence</a> &gt; <span class="el_source">OrderBuilder.java</span></div><h1>OrderBuilder.java</h1><pre class="source lang-java linenums">package com.qa.ims.persistence;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import com.qa.ims.persistence.Money;
+import com.qa.ims.persistence.domain.Item;
+import com.qa.ims.persistence.domain.Order;
+
+public class OrderBuilder {
+	private Long id;
+	private Long customerId;
+	private Date orderDate;
+	private List&lt;Item&gt; itemList;
+	
+<span class="fc" id="L19">	public OrderBuilder() {</span>
+<span class="fc" id="L20">		this.itemList = new ArrayList&lt;Item&gt;();</span>
+<span class="fc" id="L21">	}</span>
+	public Order build() {
+<span class="fc" id="L23">	 return new Order(id, customerId, orderDate, itemList);</span>
+	}
+	
+	public OrderBuilder id(Long id) {
+<span class="fc" id="L27">		this.id = id;</span>
+<span class="fc" id="L28">		return this;</span>
+	}
+
+	public OrderBuilder customerId(long customerId) {
+<span class="fc" id="L32">		this.customerId = customerId;</span>
+<span class="fc" id="L33">		return this;</span>
+	}
+
+	public OrderBuilder orderDate(Date orderDate) {
+<span class="fc" id="L37">		this.orderDate = orderDate;</span>
+<span class="fc" id="L38">		return this;</span>
+	}
+
+	public OrderBuilder itemList(List&lt;Item&gt; itemList) {
+<span class="fc" id="L42">		this.itemList = itemList;</span>
+<span class="fc" id="L43">		return this;</span>
+	}
+
+	public OrderBuilder addItemToList(Item item) {
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if(this.itemList == null) {</span>
+<span class="nc" id="L48">			this.itemList = new ArrayList&lt;Item&gt;();</span>
+		}
+<span class="fc" id="L50">		this.itemList.add(item);</span>
+<span class="fc" id="L51">		return this;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
