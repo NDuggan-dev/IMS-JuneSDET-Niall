@@ -15,9 +15,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.qa.ims.persistence.ItemBuilder;
+import com.qa.ims.persistence.Money;
+import com.qa.ims.persistence.OrderBuilder;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
-import com.qa.ims.persistence.domain.Money;
 import com.qa.ims.persistence.domain.Order;
 import com.qa.ims.utils.DBUtilsPool;
 
@@ -37,9 +39,10 @@ public class OrderDAOTest {
 	@Test
 	public void testCreate() {
 		final List<Item> itemList = new ArrayList<Item>();
-		final Item item1 = new Item(1L, "Deluminator", Money.pounds(300), 20);
-		itemList.add(item1);
-		final Order expected = new Order(2L, 1L, itemList);
+		final Item item1 =  new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
+		itemList.add(item1); 
+		final Order expected = new OrderBuilder().id(2L).customerId(1l).itemList(itemList).build();
+				
 		 
 		Order result = DAO.create(expected);
 		//order_date is DEFAULT now() in SQL
@@ -50,15 +53,15 @@ public class OrderDAOTest {
 		assertFalse(expectedDate == resultDate);
 		assertEquals(expected, result);
 	}
-	
+	 
 	
 	@Test
 	public void testReadAll() {
 		final HashMap<Long, Order> expected = new HashMap<Long, Order>();
 		final List<Item> itemList = new ArrayList<Item>();
-		final Item item1 = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		final Item item1 =  new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
 		itemList.add(item1);
-		final Order created = new Order(1L, 1L, itemList);
+		final Order created = new OrderBuilder().id(1L).customerId(1L).itemList(itemList).build();
 		expected.put(1L, created);
 		
 		final HashMap<Long, Order> result = DAO.readAll();
@@ -73,9 +76,9 @@ public class OrderDAOTest {
 	@Test
 	public void testReadLatest() {
 		final List<Item> itemList = new ArrayList<Item>();
-		final Item item1 = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		final Item item1 = new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
 		itemList.add(item1);
-		final Order expected = new Order(1L, 1L, itemList);
+		final Order expected = new OrderBuilder().id(1L).customerId(1L).itemList(itemList).build();
 		
 		final Order result = DAO.readLatest();
 		result.setOrderDate(null);
@@ -87,9 +90,9 @@ public class OrderDAOTest {
 	public void testRead() {
 		final long ID = 1L;
 		final List<Item> itemList = new ArrayList<Item>();
-		final Item item1 = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		final Item item1 =  new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
 		itemList.add(item1);
-		final Order expected = new Order(1L, 1L, itemList);
+		final Order expected = new OrderBuilder().id(1L).customerId(1L).itemList(itemList).build();
 		
 		final Order result = DAO.read(ID);
 		result.setOrderDate(null);
@@ -100,9 +103,9 @@ public class OrderDAOTest {
 	@Test
 	public void testUpdate() {
 		final List<Item> itemList = new ArrayList<Item>();
-		final Item item1 = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		final Item item1 =  new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
 		itemList.add(item1);
-		final Order expected = new Order(1L, 1L, itemList);
+		final Order expected = new OrderBuilder().id(1L).customerId(1L).itemList(itemList).build();
 		
 		final Order result = DAO.update(expected);
 		result.setOrderDate(null);
@@ -119,7 +122,7 @@ public class OrderDAOTest {
 	@Test 
 	public void testDeleteItemFromOrder() {
 		final List<Item> itemList = new ArrayList<Item>();
-		final Order expected = new Order(1L, 1L, itemList);
+		final Order expected = new OrderBuilder().id(1L).customerId(1L).itemList(itemList).build();
 		
 		final Order result = DAO.deleteItemFromOrder(1L, expected);
 		result.setOrderDate(null);

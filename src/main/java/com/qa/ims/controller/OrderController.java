@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qa.ims.persistence.OrderBuilder;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.dao.ItemDAO;
 import com.qa.ims.persistence.dao.OrderDAO;
@@ -58,7 +59,7 @@ public class OrderController implements CrudController<Order> {
 		Long customerId = utils.getLong();
 		HashMap<Long, Item> catalogue = catalogue();
 		List<Item> basket = createBasket(catalogue); 
-		Order order = orderDAO.create(new Order(customerId, basket));
+		Order order = orderDAO.create(new OrderBuilder().customerId(customerId).itemList(basket).build());		
 		LOGGER.info("Order created");
 		return order;
 	}
@@ -143,7 +144,7 @@ public class OrderController implements CrudController<Order> {
 		return order;
 	}
 	
-	public Order deleteItemsFromOrder(Order order) {
+	public Order deleteItemsFromOrder(Order order) { 
 		LOGGER.info("Would you like to delete items(yes/no)");
 		boolean deleteItems = utils.getYesNo();
 		while(deleteItems) {

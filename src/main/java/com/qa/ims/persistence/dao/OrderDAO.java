@@ -16,6 +16,7 @@ import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qa.ims.persistence.OrderBuilder;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.persistence.domain.Order;
@@ -26,7 +27,7 @@ public class OrderDAO implements Dao<Order> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ItemDAO itemDAO = new ItemDAO();
 	//private static final DataSource dataSource = DBUtilsPool.getDataSource();
-
+ 
 	
 	@Override
 	public Order modelFromResultSet(ResultSet resultSet) throws SQLException {
@@ -34,7 +35,7 @@ public class OrderDAO implements Dao<Order> {
 		Long customerId = resultSet.getLong("customer_id");
 		Date orderDate = resultSet.getDate("order_date");
 		List<Item> itemList = itemMapToList(readItemMap(id));
-		return new Order(id, customerId, orderDate, itemList);
+		return new OrderBuilder().id(id).customerId(customerId).orderDate(orderDate).itemList(itemList).build();
 	} 
 
 	/**
@@ -214,7 +215,7 @@ public class OrderDAO implements Dao<Order> {
 			LOGGER.error(e.getMessage());
 		}
 		return itemList;
-	}
+	} 
 	
 	public Order deleteItemFromOrder(Long id, Order thisOrder) {
 		try (Connection connection = DBUtilsPool.getDataSource().getConnection();

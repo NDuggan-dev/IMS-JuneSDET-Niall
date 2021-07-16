@@ -9,8 +9,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.qa.ims.persistence.ItemBuilder;
+import com.qa.ims.persistence.Money;
 import com.qa.ims.persistence.domain.Item;
-import com.qa.ims.persistence.domain.Money;
 import com.qa.ims.utils.DBUtilsPool;
  
 public class ItemsDAOFailTest {
@@ -25,10 +26,11 @@ public class ItemsDAOFailTest {
 	@Test
 	public void testCreate() {
 		//Resources
-		final Item expected = new Item(2L, "Deluminator", Money.pounds(300), 20);
+		final Item expected = 
+				new ItemBuilder().itemId(2L).name("Deluminator").value(Money.pounds(300)).quanity(20).build(); 
 		assertNull(DAO.create(expected));
 	}
-
+ 
 	@Test
 	public void testReadAll() {
 		assertNull(DAO.readAll()); 
@@ -46,7 +48,8 @@ public class ItemsDAOFailTest {
 
 	@Test
 	public void testUpdate() {
-		final Item updated = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		final Item updated = 
+				new ItemBuilder().itemId(1L).name("Deluminator").value(Money.pounds(300)).quanity(20).build();
 		assertNull(DAO.update(updated));
 	}
 

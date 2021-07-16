@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qa.ims.persistence.CustomerBuilder;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.Utils;
@@ -50,7 +51,8 @@ public class CustomerController implements CrudController<Customer> {
 		String firstName = utils.getString();
 		LOGGER.info("Please enter a surname");
 		String surname = utils.getString();
-		Customer customer = customerDAO.create(new Customer(firstName, surname));
+		Customer customer = customerDAO.create(
+				new CustomerBuilder().firstName(firstName).surname(surname).build());
 		LOGGER.info("Customer created");
 		return customer;
 	}
@@ -66,10 +68,11 @@ public class CustomerController implements CrudController<Customer> {
 		String firstName = utils.getString();
 		LOGGER.info("Please enter a surname");
 		String surname = utils.getString();
-		Customer customer = customerDAO.update(new Customer(id, firstName, surname));
+		Customer customer = customerDAO.update(
+				new CustomerBuilder().id(id).firstName(firstName).surname(surname).build());
 		LOGGER.info("Customer Updated");
 		return customer;
-	}
+	} 
 
 	/**
 	 * Deletes an existing customer by the id of the customer
