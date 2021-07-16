@@ -60,11 +60,6 @@ public class Item {
 	}
 
 	@Override
-	public String toString() {
-		return "Item [itemId=" + itemId + ", name=" + name + ", value=" + value + ", quantity=" + quantity + "]";
-	}
-
-	@Override
 	public int hashCode() {
 		return Objects.hash(itemId, name, quantity, value);
 	}
@@ -81,5 +76,12 @@ public class Item {
 		return Objects.equals(itemId, other.itemId) && Objects.equals(name, other.name)
 				&& Objects.equals(quantity, other.quantity) && Objects.equals(value, other.value);
 	}
+
+	@Override
+	public String toString() {
+		return "Item [itemId=" + itemId + ", name=" + name + ", value=" + value + ", quantity=" + quantity + "]";
+	}
+
+	
 
 }

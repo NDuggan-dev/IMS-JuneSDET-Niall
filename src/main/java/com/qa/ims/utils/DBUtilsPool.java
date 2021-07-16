@@ -22,7 +22,7 @@ public class DBUtilsPool {
 	private static BasicDataSource basicDS;
 
 	
-	private DBUtilsPool(String properties) {
+	private DBUtilsPool(String properties) { 
 			Properties dbProps = new Properties();
 			basicDS = new BasicDataSource();
 			try {
@@ -61,13 +61,13 @@ public class DBUtilsPool {
 		}
 		return modified;
 	}
+	
 	public int init(String... paths) {
 		int modified = 0;
 
 		for (String path : paths) {
 			modified += executeSQLFile(path);
 		}
-
 		return modified;
 	}
 	
@@ -84,6 +84,7 @@ public class DBUtilsPool {
 		}
 		return basicDS;
 	}
+	
 	public static DBUtilsPool getInstance() {
 		if (instance == null) {
 			try {
@@ -93,9 +94,8 @@ public class DBUtilsPool {
 			}
 		}
 		return instance;
-		
 	}
-
+	
 }
 
 

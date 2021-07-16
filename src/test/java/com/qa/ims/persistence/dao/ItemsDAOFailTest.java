@@ -1,9 +1,9 @@
 package com.qa.ims.persistence.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Before;
@@ -12,61 +12,47 @@ import org.junit.Test;
 import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.persistence.domain.Money;
 import com.qa.ims.utils.DBUtilsPool;
-
-
-public class ItemsDAOTest {
-
+ 
+public class ItemsDAOFailTest {
 	private final ItemDAO DAO = new ItemDAO();
 
 
 	@Before
 	public void setup() {
-		DBUtilsPool.getInstance().init("src/test/resources/sql-schema.sql", "src/test/resources/sql-data.sql");
+		DBUtilsPool.getInstance().init("src/test/resources/sql-schema2fail.sql", "src/test/resources/sql-data.sql");
 	}
 
 	@Test
 	public void testCreate() {
 		//Resources
 		final Item expected = new Item(2L, "Deluminator", Money.pounds(300), 20);
-		//Actions
-		Item result = DAO.create(expected);
-		//Assertions
-		assertEquals(expected, result);
+		assertNull(DAO.create(expected));
 	}
 
 	@Test
 	public void testReadAll() {
-		HashMap<Long, Item> expected = new HashMap<>();
-		expected.put(1L, new Item(1L, "Deluminator", Money.pounds(300), 20));
-		assertEquals(expected, DAO.readAll()); 
-	} 
+		assertNull(DAO.readAll()); 
+	}
 
 	@Test  
 	public void testReadLatest() {
-		Item expected = new Item(1L, "Deluminator", Money.pounds(300), 20);
-		assertEquals(expected, DAO.readLatest()); 
+		assertNull(DAO.readLatest()); 
 	}
 
 	@Test
 	public void testRead() {
-		// Resources
-		final long ID = 1L;
-		final Item expected = new Item(1L, "Deluminator", Money.pounds(300), 20);
-		//Actions
-		Item result = DAO.read(ID);
-		//Assertions
-		assertEquals(expected, result);
+		assertNull(DAO.read(1L));
 	}
 
 	@Test
 	public void testUpdate() {
 		final Item updated = new Item(1L, "Deluminator", Money.pounds(300), 20);
-		assertEquals(updated, DAO.update(updated));
-
+		assertNull(DAO.update(updated));
 	}
 
 	@Test
 	public void testDelete() {
 		assertEquals(0, DAO.delete(1));
 	}
+
 }
