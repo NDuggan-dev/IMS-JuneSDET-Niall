@@ -27,7 +27,7 @@ public class OrderController implements CrudController<Order> {
 
 	private OrderDAO orderDAO;
 	private ItemDAO itemDAO;
-
+ 
 
 	public OrderController(OrderDAO orderDAO, Utils utils, ItemDAO itemDAO) {
 		super();
@@ -46,7 +46,7 @@ public class OrderController implements CrudController<Order> {
 			LOGGER.info(order.getValue());
 		}
 		return orders;
-	}
+	} 
 
 	/**
 	 * Creates a customer by taking in user input
@@ -66,30 +66,15 @@ public class OrderController implements CrudController<Order> {
 	 * Updates an existing order by taking in user input
 	 */
 	@Override
-	public Order update() {
+	public Order update() { 
 		boolean add = false;
 		LOGGER.info("Please enter the id of the order you would like to update");
 		Long id = utils.getLong();
 		Order order = orderDAO.read(id);
-		LOGGER.info("Would you like to add items");
-		boolean addItem = utils.getYesNo();
-		List<Item> basket = new ArrayList<>();
-		if(addItem) {
-			HashMap<Long, Item> catalogue = catalogue();
-			basket = createBasket(catalogue);
-			for(Item item : basket) {
-				order = orderDAO.addItemToOrder(order, item);
-			}
-		}
-		boolean deleteItems = false;
-		do {
-			LOGGER.info("Would you like to delete items");
-			deleteItems = utils.getYesNo();
-			listItems(orderDAO.readItemMap(order.getId()));
-			LOGGER.info("Please enter item ref of item you would like to delete");
-			Long deleteId = utils.getLong();
-			order = orderDAO.deleteItemFromOrder(deleteId, order);
-		}while(!deleteItems);
+		order = addItemsToOrder(order);
+		order = deleteItemsFromOrder(order);
+
+		
 		LOGGER.info("Order Updated");
 		return order;
 	}
@@ -130,9 +115,48 @@ public class OrderController implements CrudController<Order> {
 		return catalogue;
 	}
 	
-	public void listItems(HashMap<Long, Item> itemList) {
+	public HashMap<Long, Item> listItems(HashMap<Long, Item> itemList) {
 		for(Entry<Long, Item> item : itemList.entrySet()) {
 			LOGGER.info("Item Ref: " + item.getKey() + " " + item.getValue().toString());
-		}	
+		}
+		return itemList;	
+	}
+	
+	public Order addItemsToOrder(Order order) {
+		if(order == null) {
+			return order;
+		}
+		LOGGER.info("Would you like to add items (yes/no)");
+		boolean addItem = utils.getYesNo();
+		List<Item> basket = new ArrayList<>(); 
+		
+		if(addItem) {
+			HashMap<Long, Item> cat = catalogue();
+			if(cat.size() > 0) {
+				basket = createBasket(cat);
+				for(Item item : basket) {
+					order = orderDAO.addItemToOrder(order, item);
+				}
+			}
+		}
+		return order;
+	}
+	
+	public Order deleteItemsFromOrder(Order order) {
+		LOGGER.info("Would you like to delete items(yes/no)");
+		boolean deleteItems = utils.getYesNo();
+		while(deleteItems) {
+			HashMap<Long, Item> listItems = listItems(orderDAO.readItemMap(order.getId()));
+			LOGGER.info("Please enter item ref of item you would like to delete");
+			Long deleteId = utils.getLong();
+			order = orderDAO.deleteItemFromOrder(deleteId, order);
+			if(listItems.size() > 1) {
+				LOGGER.info("Would you like to delete more items(yes/no)");
+				deleteItems = utils.getYesNo();
+			} else {
+				deleteItems = false;
+			}
+		}
+		return order;
 	}
 }

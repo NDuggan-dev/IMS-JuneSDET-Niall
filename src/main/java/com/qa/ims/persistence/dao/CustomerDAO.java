@@ -50,7 +50,7 @@ public class CustomerDAO implements Dao<Customer> {
 			LOGGER.debug(e);
 			LOGGER.error(e.getMessage());
 		}
-		return new HashMap<>();
+		return null;
 	}
 
 	public Customer readLatest() {

@@ -35,7 +35,7 @@ public class OrderDAO implements Dao<Order> {
 		Date orderDate = resultSet.getDate("order_date");
 		List<Item> itemList = itemMapToList(readItemMap(id));
 		return new Order(id, customerId, orderDate, itemList);
-	}
+	} 
 
 	/**
 	 * Reads all customers from the database
@@ -43,8 +43,8 @@ public class OrderDAO implements Dao<Order> {
 	 * @return A list of customers
 	 */
 	@Override
-	public HashMap<Long, Order> readAll() {
-		try (Connection connection = DBUtilsPool.getDataSource().getConnection();
+	public HashMap<Long, Order> readAll(){
+		try (Connection connection = DBUtilsPool.getDataSource().getConnection(); 
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM orders");) {
 			HashMap<Long, Order> orders = new HashMap<>();
@@ -56,7 +56,7 @@ public class OrderDAO implements Dao<Order> {
 			LOGGER.debug(e);
 			LOGGER.error(e.getMessage());
 		}
-		return new HashMap<>();
+		return null;
 	}
 
 	public Order readLatest() {
@@ -78,7 +78,7 @@ public class OrderDAO implements Dao<Order> {
 	 * @param customer - takes in a customer object. id will be ignored
 	 */
 	@Override
-	public Order create(Order order) {
+	public Order create(Order order){
 		try (Connection connection = DBUtilsPool.getDataSource().getConnection();
 				PreparedStatement statement = connection
 						.prepareStatement("INSERT INTO orders(customer_id) VALUES (?)");) {
@@ -91,8 +91,10 @@ public class OrderDAO implements Dao<Order> {
 		} 
 		List<Item> items = order.getItemList();
 		Order thisOrder = readLatest();
-		for(Item item : items) {
-			addItemToOrder(thisOrder, item);
+		if(items != null) {
+			for(Item item : items) {
+				addItemToOrder(thisOrder, item);
+			}
 		}
 		return readLatest();
 	}
@@ -112,7 +114,7 @@ public class OrderDAO implements Dao<Order> {
 		}
 		return null;
 	}
-
+ 
 	/**
 	 * Updates a customer in the database
 	 * 
