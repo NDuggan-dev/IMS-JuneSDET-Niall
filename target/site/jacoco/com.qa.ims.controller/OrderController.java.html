@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.controller</a> &gt; <span class="el_source">OrderController.java</span></div><h1>OrderController.java</h1><pre class="source lang-java linenums">package com.qa.ims.controller;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.OrderBuilder;
+import com.qa.ims.persistence.dao.CustomerDAO;
+import com.qa.ims.persistence.dao.ItemDAO;
+import com.qa.ims.persistence.dao.OrderDAO;
+import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Item;
+import com.qa.ims.persistence.domain.Order;
+import com.qa.ims.utils.Utils;
+
+/**
+ * Takes in customer details for CRUD functionality
+ *
+ */
+public class OrderController implements CrudController&lt;Order&gt; {
+
+<span class="fc" id="L26">	public static final Logger LOGGER = LogManager.getLogger();</span>
+	
+	private Utils utils;
+
+	private OrderDAO orderDAO;
+	private ItemDAO itemDAO;
+ 
+
+	public OrderController(OrderDAO orderDAO, Utils utils, ItemDAO itemDAO) {
+<span class="fc" id="L35">		super();</span>
+<span class="fc" id="L36">		this.orderDAO = orderDAO;</span>
+<span class="fc" id="L37">		this.utils = utils;</span>
+<span class="fc" id="L38">		this.itemDAO = itemDAO;</span>
+<span class="fc" id="L39">	}</span>
+
+	/**
+	 * Reads all customers to the logger
+	 */
+	@Override
+	public HashMap&lt;Long, Order&gt; readAll() {
+<span class="fc" id="L46">		HashMap&lt;Long, Order&gt; orders = orderDAO.readAll();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		for(Entry&lt;Long, Order&gt; order : orders.entrySet()) {</span>
+<span class="fc" id="L48">			LOGGER.info(order.getValue());</span>
+<span class="fc" id="L49">		}</span>
+<span class="fc" id="L50">		return orders;</span>
+	} 
+
+	/**
+	 * Creates a customer by taking in user input
+	 */
+	@Override
+	public Order create() {
+<span class="fc" id="L58">		LOGGER.info(&quot;Please enter a customer ID&quot;);</span>
+<span class="fc" id="L59">		Long customerId = utils.getLong();</span>
+<span class="fc" id="L60">		HashMap&lt;Long, Item&gt; catalogue = catalogue();</span>
+<span class="fc" id="L61">		List&lt;Item&gt; basket = createBasket(catalogue); </span>
+<span class="fc" id="L62">		Order order = orderDAO.create(new OrderBuilder().customerId(customerId).itemList(basket).build());		</span>
+<span class="fc" id="L63">		LOGGER.info(&quot;Order created&quot;);</span>
+<span class="fc" id="L64">		return order;</span>
+	}
+
+	/**
+	 * Updates an existing order by taking in user input
+	 */
+	@Override
+	public Order update() { 
+<span class="fc" id="L72">		boolean add = false;</span>
+<span class="fc" id="L73">		LOGGER.info(&quot;Please enter the id of the order you would like to update&quot;);</span>
+<span class="fc" id="L74">		Long id = utils.getLong();</span>
+<span class="fc" id="L75">		Order order = orderDAO.read(id);</span>
+<span class="fc" id="L76">		order = addItemsToOrder(order);</span>
+<span class="fc" id="L77">		order = deleteItemsFromOrder(order);</span>
+
+		
+<span class="fc" id="L80">		LOGGER.info(&quot;Order Updated&quot;);</span>
+<span class="fc" id="L81">		return order;</span>
+	}
+
+	/**
+	 * Deletes an existing customer by the id of the customer
+	 * 
+	 * @return
+	 */
+	@Override
+	public int delete() {
+<span class="fc" id="L91">		LOGGER.info(&quot;Please enter the id of the order you would like to delete&quot;);</span>
+<span class="fc" id="L92">		Long id = utils.getLong();</span>
+<span class="fc" id="L93">		return orderDAO.delete(id);</span>
+	}
+	
+	public List&lt;Item&gt; createBasket(HashMap&lt;Long, Item&gt; catalogue){
+<span class="fc" id="L97">		boolean moreItems = true;</span>
+<span class="fc" id="L98">		List&lt;Item&gt; basket = new ArrayList&lt;Item&gt;();</span>
+		
+		do {
+<span class="fc" id="L101">			LOGGER.info(&quot;Please select item by ID&quot;);</span>
+<span class="fc" id="L102">			Long selectedItemID =  utils.getLong();</span>
+<span class="fc" id="L103">			Item selectedItem = catalogue.get(selectedItemID);</span>
+<span class="fc" id="L104">			basket.add(selectedItem);</span>
+<span class="fc" id="L105">			LOGGER.info(&quot;Would you like to add another item? (Yes/No)&quot;);</span>
+<span class="fc" id="L106">			moreItems = utils.getYesNo();</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">		}while(moreItems);</span>
+		
+<span class="fc" id="L109">		return basket;</span>
+	}
+	
+	public HashMap&lt;Long, Item&gt; catalogue(){
+<span class="fc" id="L113">		HashMap&lt;Long, Item&gt; catalogue = itemDAO.readAll();</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		for(Entry&lt;Long, Item&gt; item : catalogue.entrySet()) {</span>
+<span class="fc" id="L115">			LOGGER.info(item.getValue().toString());</span>
+<span class="fc" id="L116">		}</span>
+<span class="fc" id="L117">		return catalogue;</span>
+	}
+	
+	public HashMap&lt;Long, Item&gt; listItems(HashMap&lt;Long, Item&gt; itemList) {
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		for(Entry&lt;Long, Item&gt; item : itemList.entrySet()) {</span>
+<span class="fc" id="L122">			LOGGER.info(&quot;Item Ref: &quot; + item.getKey() + &quot; &quot; + item.getValue().toString());</span>
+<span class="fc" id="L123">		}</span>
+<span class="fc" id="L124">		return itemList;	</span>
+	}
+	
+	public Order addItemsToOrder(Order order) {
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		if(order == null) {</span>
+<span class="fc" id="L129">			return order;</span>
+		}
+<span class="fc" id="L131">		LOGGER.info(&quot;Would you like to add items (yes/no)&quot;);</span>
+<span class="fc" id="L132">		boolean addItem = utils.getYesNo();</span>
+<span class="fc" id="L133">		List&lt;Item&gt; basket = new ArrayList&lt;&gt;(); </span>
+		
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		if(addItem) {</span>
+<span class="fc" id="L136">			HashMap&lt;Long, Item&gt; cat = catalogue();</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">			if(cat.size() &gt; 0) {</span>
+<span class="nc" id="L138">				basket = createBasket(cat);</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">				for(Item item : basket) {</span>
+<span class="nc" id="L140">					order = orderDAO.addItemToOrder(order, item);</span>
+<span class="nc" id="L141">				}</span>
+			}
+		}
+<span class="fc" id="L144">		return order;</span>
+	}
+	
+	public Order deleteItemsFromOrder(Order order) { 
+<span class="fc" id="L148">		LOGGER.info(&quot;Would you like to delete items(yes/no)&quot;);</span>
+<span class="fc" id="L149">		boolean deleteItems = utils.getYesNo();</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">		while(deleteItems) {</span>
+<span class="nc" id="L151">			HashMap&lt;Long, Item&gt; listItems = listItems(orderDAO.readItemMap(order.getId()));</span>
+<span class="nc" id="L152">			LOGGER.info(&quot;Please enter item ref of item you would like to delete&quot;);</span>
+<span class="nc" id="L153">			Long deleteId = utils.getLong();</span>
+<span class="nc" id="L154">			order = orderDAO.deleteItemFromOrder(deleteId, order);</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">			if(listItems.size() &gt; 1) {</span>
+<span class="nc" id="L156">				LOGGER.info(&quot;Would you like to delete more items(yes/no)&quot;);</span>
+<span class="nc" id="L157">				deleteItems = utils.getYesNo();</span>
+			} else {
+<span class="nc" id="L159">				deleteItems = false;</span>
+			}
+<span class="nc" id="L161">		}</span>
+<span class="fc" id="L162">		return order;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

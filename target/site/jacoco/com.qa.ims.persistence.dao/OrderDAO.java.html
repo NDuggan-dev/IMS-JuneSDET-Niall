@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrderDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ims</a> &gt; <a href="index.source.html" class="el_package">com.qa.ims.persistence.dao</a> &gt; <span class="el_source">OrderDAO.java</span></div><h1>OrderDAO.java</h1><pre class="source lang-java linenums">package com.qa.ims.persistence.dao;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
+import javax.sql.DataSource;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.qa.ims.persistence.OrderBuilder;
+import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.domain.Item;
+import com.qa.ims.persistence.domain.Order;
+import com.qa.ims.utils.DBUtilsPool;
+
+<span class="fc" id="L25">public class OrderDAO implements Dao&lt;Order&gt; {</span>
+
+<span class="fc" id="L27">	private static final Logger LOGGER = LogManager.getLogger();</span>
+<span class="fc" id="L28">	private static final ItemDAO itemDAO = new ItemDAO();</span>
+	//private static final DataSource dataSource = DBUtilsPool.getDataSource();
+ 
+	
+	@Override
+	public Order modelFromResultSet(ResultSet resultSet) throws SQLException {
+<span class="fc" id="L34">		Long id = resultSet.getLong(&quot;order_id&quot;);</span>
+<span class="fc" id="L35">		Long customerId = resultSet.getLong(&quot;customer_id&quot;);</span>
+<span class="fc" id="L36">		Date orderDate = resultSet.getDate(&quot;order_date&quot;);</span>
+<span class="fc" id="L37">		List&lt;Item&gt; itemList = itemMapToList(readItemMap(id));</span>
+<span class="fc" id="L38">		return new OrderBuilder().id(id).customerId(customerId).orderDate(orderDate).itemList(itemList).build();</span>
+	} 
+
+	/**
+	 * Reads all customers from the database
+	 * 
+	 * @return A list of customers
+	 */
+	@Override
+	public HashMap&lt;Long, Order&gt; readAll(){
+<span class="fc" id="L48">		try (Connection connection = DBUtilsPool.getDataSource().getConnection(); </span>
+<span class="fc" id="L49">				Statement statement = connection.createStatement();</span>
+<span class="fc" id="L50">				ResultSet resultSet = statement.executeQuery(&quot;SELECT * FROM orders&quot;);) {</span>
+<span class="fc" id="L51">			HashMap&lt;Long, Order&gt; orders = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			while (resultSet.next()) {</span>
+<span class="fc" id="L53">				orders.put(modelFromResultSet(resultSet).getId(), modelFromResultSet(resultSet));</span>
+			}
+<span class="fc" id="L55">			return orders;</span>
+<span class="fc" id="L56">		} catch (SQLException e) {</span>
+<span class="fc" id="L57">			LOGGER.debug(e);</span>
+<span class="fc" id="L58">			LOGGER.error(e.getMessage());</span>
+		}
+<span class="fc" id="L60">		return null;</span>
+	}
+
+	public Order readLatest() {
+<span class="fc" id="L64">		try (Connection connection = DBUtilsPool.getDataSource().getConnection();</span>
+<span class="fc" id="L65">				Statement statement = connection.createStatement();</span>
+<span class="fc" id="L66">				ResultSet resultSet = statement.executeQuery(&quot;SELECT * FROM orders ORDER BY order_id DESC LIMIT 1&quot;);) {</span>
+<span class="fc" id="L67">			resultSet.next();</span>
+<span class="fc" id="L68">			return modelFromResultSet(resultSet);</span>
+<span class="fc" id="L69">		} catch (Exception e) {</span>
+<span class="fc" id="L70">			LOGGER.debug(e);</span>
+<span class="fc" id="L71">			LOGGER.error(e.getMessage());</span>
+		}
+<span class="fc" id="L73">		return null;</span>
+	}
+
+	/**
+	 * Creates a customer in the database
+	 * 
+	 * @param customer - takes in a customer object. id will be ignored
+	 */
+	@Override
+	public Order create(Order order){
+<span class="fc" id="L83">		try (Connection connection = DBUtilsPool.getDataSource().getConnection();</span>
+<span class="fc" id="L84">				PreparedStatement statement = connection</span>
+<span class="fc" id="L85">						.prepareStatement(&quot;INSERT INTO orders(customer_id) VALUES (?)&quot;);) {</span>
+<span class="fc" id="L86">			statement.setLong(1, order.getCustomerId());</span>
+<span class="fc" id="L87">			statement.executeUpdate();</span>
+<span class="fc" id="L88">			readLatest();</span>
+<span class="fc" id="L89">		} catch (Exception e) {</span>
+<span class="fc" id="L90">			LOGGER.debug(e);</span>
+<span class="fc" id="L91">			LOGGER.error(e.getMessage());</span>
+<span class="fc" id="L92">		} </span>
+<span class="fc" id="L93">		List&lt;Item&gt; items = order.getItemList();</span>
+<span class="fc" id="L94">		Order thisOrder = readLatest();</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if(items != null) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for(Item item : items) {</span>
+<span class="fc" id="L97">				addItemToOrder(thisOrder, item);</span>
+<span class="fc" id="L98">			}</span>
+		}
+<span class="fc" id="L100">		return readLatest();</span>
+	}
+
+	@Override
+	public Order read(Long id) {
+<span class="fc" id="L105">		try (Connection connection = DBUtilsPool.getDataSource().getConnection();</span>
+<span class="fc" id="L106">				PreparedStatement statement = connection.prepareStatement(&quot;SELECT * FROM orders WHERE order_id = ?&quot;);) {</span>
+<span class="fc" id="L107">			statement.setLong(1, id);</span>
+<span class="fc" id="L108">			try (ResultSet resultSet = statement.executeQuery();) {</span>
+<span class="fc" id="L109">				resultSet.next();</span>
+<span class="fc" id="L110">				return modelFromResultSet(resultSet);</span>
+			}
+<span class="fc" id="L112">		} catch (Exception e) {</span>
+<span class="fc" id="L113">			LOGGER.debug(e);</span>
+<span class="fc" id="L114">			LOGGER.error(e.getMessage());</span>
+		}
+<span class="fc" id="L116">		return null;</span>
+	}
+ 
+	/**
+	 * Updates a customer in the database
+	 * 
+	 * @param customer - takes in a customer object, the id field will be used to
+	 *                 update that customer in the database
+	 * @return
+	 */
+	@Override
+	public Order update(Order order) {
+<span class="fc" id="L128">		try (Connection connection = DBUtilsPool.getDataSource().getConnection();</span>
+<span class="fc" id="L129">				PreparedStatement statement = connection</span>
+<span class="fc" id="L130">						.prepareStatement(&quot;UPDATE orders SET order_date = now() WHERE order_id = ?&quot;);) {</span>
+<span class="fc" id="L131">			statement.setLong(1, order.getId());</span>
+<span class="fc" id="L132">			statement.executeUpdate();</span>
+<span class="fc" id="L133">			return read(order.getId());</span>
+<span class="fc" id="L134">		} catch (Exception e) {</span>
+<span class="fc" id="L135">			LOGGER.debug(e);</span>
+<span class="fc" id="L136">			LOGGER.error(e.getMessage());</span>
+		}
+<span class="fc" id="L138">		return null;</span>
+	}
+
+	/**
+	 * Deletes a customer in the database
+	 * 
+	 * @param id - id of the customer
+	 */
+	@Override
+	public int delete(long id) {
+<span class="fc" id="L148">        deleteFromOrderItems(id);</span>
+<span class="fc" id="L149">        try (Connection connection = DBUtilsPool.getDataSource().getConnection();</span>
+<span class="fc" id="L150">                PreparedStatement statement = connection.prepareStatement(&quot;DELETE FROM orders WHERE order_id = ?&quot;);) {</span>
+<span class="fc" id="L151">            statement.setLong(1, id);</span>
+<span class="fc" id="L152">            return statement.executeUpdate();</span>
+<span class="fc" id="L153">        } catch (Exception e) {</span>
+<span class="fc" id="L154">            LOGGER.debug(e);</span>
+<span class="fc" id="L155">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L157">        return 0;</span>
+    }
+       
+    public int deleteFromOrderItems(long id) {
+<span class="fc" id="L161">        try (Connection connection = DBUtilsPool.getDataSource().getConnection();</span>
+<span class="fc" id="L162">                PreparedStatement statement = connection.prepareStatement(&quot;DELETE FROM orders_items WHERE order_id = ?&quot;);) {</span>
+<span class="fc" id="L163">            statement.setLong(1, id);</span>
+<span class="fc" id="L164">            return statement.executeUpdate();</span>
+<span class="fc" id="L165">        } catch (Exception e) {</span>
+<span class="fc" id="L166">            LOGGER.debug(e);</span>
+<span class="fc" id="L167">            LOGGER.error(e.getMessage());</span>
+        }
+<span class="fc" id="L169">        return 0;</span>
+    }
+
+
+	public Order addItemToOrder(Order thisOrder, Item item) {
+<span class="fc" id="L174">		try (Connection connection = DBUtilsPool.getDataSource().getConnection();</span>
+<span class="fc" id="L175">				PreparedStatement statement = connection</span>
+<span class="fc" id="L176">						.prepareStatement(&quot;INSERT INTO orders_items(order_id, item_id) VALUES (?, ?)&quot;);) {</span>
+<span class="fc" id="L177">				statement.setLong(1, thisOrder.getId());</span>
+<span class="fc" id="L178">			statement.setLong(2, item.getItemId());</span>
+<span class="fc" id="L179">			statement.executeUpdate();</span>
+<span class="fc" id="L180">			update(thisOrder);</span>
+<span class="fc" id="L181">			return read(thisOrder.getId());</span>
+<span class="fc" id="L182">		} catch (Exception e) {</span>
+<span class="fc" id="L183">			LOGGER.debug(e);</span>
+<span class="fc" id="L184">			LOGGER.error(e.getMessage());</span>
+		} 
+<span class="fc" id="L186">		return null;</span>
+	}
+	
+	public HashMap&lt;Long, Item&gt; readItemMap(Long orderId){
+<span class="fc" id="L190">		HashMap&lt;Long, Item&gt; itemMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L191">		try (Connection connection = DBUtilsPool.getDataSource().getConnection();</span>
+<span class="fc" id="L192">			PreparedStatement statement = </span>
+<span class="fc" id="L193">			connection.prepareStatement(&quot;SELECT * FROM orders_items WHERE order_id = ?&quot;);) {</span>
+<span class="fc" id="L194">			statement.setLong(1, orderId);</span>
+<span class="fc" id="L195">				try (ResultSet resultSet = statement.executeQuery();) {</span>
+<span class="fc" id="L196">				return listItemFromResultSet(resultSet);</span>
+				}
+<span class="nc" id="L198">			}catch (Exception e) {</span>
+<span class="nc" id="L199">				LOGGER.debug(e);</span>
+<span class="nc" id="L200">				LOGGER.error(e.getMessage()); </span>
+		}
+<span class="nc" id="L202">		return itemMap;</span>
+	}
+	
+	
+	public HashMap&lt;Long, Item&gt; listItemFromResultSet(ResultSet resultSet){
+<span class="fc" id="L207">		HashMap&lt;Long, Item&gt; itemList = new HashMap&lt;&gt;();</span>
+		try {
+<span class="fc bfc" id="L209" title="All 2 branches covered.">			while(resultSet.next()) {</span>
+<span class="fc" id="L210">					Item item = itemDAO.read(resultSet.getLong(&quot;item_id&quot;));</span>
+<span class="fc" id="L211">					itemList.put(resultSet.getLong(&quot;orders_items_id&quot;), item);</span>
+<span class="fc" id="L212">			}</span>
+<span class="nc" id="L213">		} catch (SQLException e) {</span>
+<span class="nc" id="L214">			LOGGER.debug(e);</span>
+<span class="nc" id="L215">			LOGGER.error(e.getMessage());</span>
+<span class="fc" id="L216">		}</span>
+<span class="fc" id="L217">		return itemList;</span>
+	} 
+	
+	public Order deleteItemFromOrder(Long id, Order thisOrder) {
+<span class="fc" id="L221">		try (Connection connection = DBUtilsPool.getDataSource().getConnection();</span>
+<span class="fc" id="L222">				PreparedStatement statement = connection</span>
+<span class="fc" id="L223">						.prepareStatement(&quot;DELETE FROM orders_items WHERE orders_items_id = ?&quot;);) {</span>
+<span class="fc" id="L224">				statement.setLong(1, id);</span>
+<span class="fc" id="L225">			statement.executeUpdate();</span>
+<span class="fc" id="L226">			update(thisOrder);</span>
+<span class="fc" id="L227">			return read(thisOrder.getId());</span>
+<span class="fc" id="L228">		} catch (Exception e) {</span>
+<span class="fc" id="L229">			LOGGER.debug(e);</span>
+<span class="fc" id="L230">			LOGGER.error(e.getMessage());</span>
+		} 
+<span class="fc" id="L232">		return null;</span>
+	}
+	
+	public List&lt;Item&gt; itemMapToList(HashMap&lt;Long, Item&gt; itemMap){
+<span class="fc" id="L236">		List&lt;Item&gt; itemList = new ArrayList&lt;Item&gt;();</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">		for(Entry&lt;Long, Item&gt; item : itemMap.entrySet()) {</span>
+<span class="fc" id="L238">			itemList.add(item.getValue());</span>
+<span class="fc" id="L239">		}	</span>
+<span class="fc" id="L240">		return itemList;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
