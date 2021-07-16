@@ -9,14 +9,14 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.qa.ims.persistence.CustomerBuilder;
-import com.qa.ims.persistence.domain.Customer;
+import com.qa.ims.persistence.Money;
+import com.qa.ims.persistence.domain.Item;
 import com.qa.ims.utils.DBUtilsPool;
 
 
-public class CustomerDAOTest {
+public class ItemsDAOTest {
 
-	private final CustomerDAO DAO = new CustomerDAO(); 
+	private final ItemDAO DAO = new ItemDAO();
 
 
 	@Before
@@ -26,33 +26,41 @@ public class CustomerDAOTest {
 
 	@Test
 	public void testCreate() {
-		final Customer created = new CustomerBuilder().id(2L).firstName("chris").surname("perrins").build();
-		assertEquals(created, DAO.create(created));
+		//Resources
+		final Item expected = new Item(2L, "Deluminator", Money.pounds(300), 20);
+		//Actions
+		Item result = DAO.create(expected);
+		//Assertions
+		assertEquals(expected, result);
 	}
- 
+
 	@Test
 	public void testReadAll() {
-		HashMap<Long, Customer> expected = new HashMap<>();
-		expected.put(1L, new CustomerBuilder().id(1L).firstName("jordan").surname("harrison").build());
+		HashMap<Long, Item> expected = new HashMap<>();
+		expected.put(1L, new Item(1L, "Deluminator", Money.pounds(300), 20));
 		assertEquals(expected, DAO.readAll()); 
-	}
- 
-	@Test
+	} 
+
+	@Test  
 	public void testReadLatest() {
-		Customer expected = new CustomerBuilder().id(1L).firstName("jordan").surname("harrison").build();
+		Item expected = new Item(1L, "Deluminator", Money.pounds(300), 20);
 		assertEquals(expected, DAO.readLatest()); 
-		
 	}
 
 	@Test
 	public void testRead() {
+		// Resources
 		final long ID = 1L;
-		assertEquals(new CustomerBuilder().id(1L).firstName("jordan").surname("harrison").build(), DAO.read(ID));
+		final Item expected = new Item(1L, "Deluminator", Money.pounds(300), 20);
+		//Actions
+		Item result = DAO.read(ID);
+		//Assertions
+		assertEquals(expected, result);
 	}
 
 	@Test
 	public void testUpdate() {
-		final Customer updated =  new CustomerBuilder().id(1L).firstName("chris").surname("perrins").build();
+		final Item updated = new Item(1L, "Deluminator", Money.pounds(300), 20);
 		assertEquals(updated, DAO.update(updated));
 
 	}

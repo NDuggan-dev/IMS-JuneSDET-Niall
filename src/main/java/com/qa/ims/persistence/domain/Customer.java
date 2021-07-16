@@ -6,15 +6,14 @@ public class Customer {
 	private String firstName;
 	private String surname;
 
-	public Customer(String firstName, String surname) {
-		this.setFirstName(firstName);
-		this.setSurname(surname);
-	}
-
 	public Customer(Long id, String firstName, String surname) {
+		super();
 		this.setId(id);
 		this.setFirstName(firstName);
 		this.setSurname(surname);
+	}
+	public Customer() {
+		super();
 	}
 
 	public Long getId() {

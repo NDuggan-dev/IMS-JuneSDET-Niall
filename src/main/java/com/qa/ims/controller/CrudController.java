@@ -1,6 +1,7 @@
 package com.qa.ims.controller;
 
-import java.util.List;
+import java.util.HashMap;
+
 
 /**
  * Create, Read, Update and Delete controller. Takes in inputs for each action
@@ -8,7 +9,7 @@ import java.util.List;
  */
 public interface CrudController<T> {
 
-	List<T> readAll();
+	HashMap<Long, T> readAll();
 
 	T create();
 

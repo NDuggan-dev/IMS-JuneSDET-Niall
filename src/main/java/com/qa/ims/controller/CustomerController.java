@@ -1,10 +1,13 @@
 package com.qa.ims.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.qa.ims.persistence.CustomerBuilder;
 import com.qa.ims.persistence.dao.CustomerDAO;
 import com.qa.ims.persistence.domain.Customer;
 import com.qa.ims.utils.Utils;
@@ -16,9 +19,10 @@ import com.qa.ims.utils.Utils;
 public class CustomerController implements CrudController<Customer> {
 
 	public static final Logger LOGGER = LogManager.getLogger();
+	private Utils utils;
 
 	private CustomerDAO customerDAO;
-	private Utils utils;
+
 
 	public CustomerController(CustomerDAO customerDAO, Utils utils) {
 		super();
@@ -30,9 +34,9 @@ public class CustomerController implements CrudController<Customer> {
 	 * Reads all customers to the logger
 	 */
 	@Override
-	public List<Customer> readAll() {
-		List<Customer> customers = customerDAO.readAll();
-		for (Customer customer : customers) {
+	public HashMap<Long, Customer> readAll() {
+		HashMap<Long, Customer> customers = customerDAO.readAll();
+		for (Entry<Long, Customer> customer : customers.entrySet()) {
 			LOGGER.info(customer);
 		}
 		return customers;
@@ -47,7 +51,8 @@ public class CustomerController implements CrudController<Customer> {
 		String firstName = utils.getString();
 		LOGGER.info("Please enter a surname");
 		String surname = utils.getString();
-		Customer customer = customerDAO.create(new Customer(firstName, surname));
+		Customer customer = customerDAO.create(
+				new CustomerBuilder().firstName(firstName).surname(surname).build());
 		LOGGER.info("Customer created");
 		return customer;
 	}
@@ -63,10 +68,11 @@ public class CustomerController implements CrudController<Customer> {
 		String firstName = utils.getString();
 		LOGGER.info("Please enter a surname");
 		String surname = utils.getString();
-		Customer customer = customerDAO.update(new Customer(id, firstName, surname));
+		Customer customer = customerDAO.update(
+				new CustomerBuilder().id(id).firstName(firstName).surname(surname).build());
 		LOGGER.info("Customer Updated");
 		return customer;
-	}
+	} 
 
 	/**
 	 * Deletes an existing customer by the id of the customer
