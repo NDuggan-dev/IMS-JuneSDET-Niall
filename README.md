@@ -37,6 +37,14 @@ To run tests on the application open the application on your command prompt and 
 
 This application has unit tests which have a coverage above 80%. If you wish to run these tests open your applcation on command prompt and use command - mvn clean;
 
+### Deployment
+
+In order to deploy this application 
+* Open up the src of the application in your command prompt
+* Run command mvn package
+* Go to directory target using command cd target (works if git bash terminal)
+* Use command java -jar ims-0.0.1-jar-with-dependencies.jar
+
 ## Built With
 
 * [Maven](https://maven.apache.org/) - Dependency Management
