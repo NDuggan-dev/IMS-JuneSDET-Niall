@@ -14,7 +14,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 The following software is neccessary in order to use 
-Java 1.8 https://www.java.com/en/download/
+Java 1.8 https://www.java.com/en/download
 MySql https://dev.mysql.com/downloads/installer
 
 **other IDE's can be used**
