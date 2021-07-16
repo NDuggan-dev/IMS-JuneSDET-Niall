@@ -53,7 +53,7 @@ public class ItemDAO implements Dao<Item> {
 			LOGGER.debug(e);
 			LOGGER.error(e.getMessage());
 		}
-		return new HashMap<>();
+		return null;
 	}
 
 	public Item readLatest() {

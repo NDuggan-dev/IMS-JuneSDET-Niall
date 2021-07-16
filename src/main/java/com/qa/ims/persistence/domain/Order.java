@@ -1,5 +1,6 @@
 package com.qa.ims.persistence.domain;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ public class Order {
 	private Long customerId;
 	private Date orderDate;
 	private List<Item> itemList;
+	private Money totalCost;
 	
 	public Order() {
 		this.itemList = new ArrayList<Item>();
@@ -20,12 +22,28 @@ public class Order {
 		this.customerId = customerId;
 		this.orderDate = orderDate;
 		this.itemList = itemList;
+		this.totalCost = getTotalCost();
+	}
+	public Order(Long id, Long customerId, List<Item> itemList) {
+		super();
+		this.id = id;
+		this.customerId = customerId;
+		this.itemList = itemList;
+		this.totalCost = getTotalCost();
 	}
 	public Order(Long customerId, List<Item> itemList) {
 		super();
 		this.customerId = customerId;
 		this.itemList = itemList;
+		this.totalCost = getTotalCost();
 	}
+	public Order(Long id, Long customerId) {
+		super();
+		this.id = id; 
+		this.customerId = customerId;
+		this.totalCost = getTotalCost();
+	}
+
 
 	public long getId() {
 		return id;
@@ -58,9 +76,21 @@ public class Order {
 		}
 		this.itemList.add(item);
 	}
+	public Money getTotalCost() {
+		Money totalCost = Money.pounds(0);
+		if(this.itemList == null) {
+			return Money.pounds(0);
+		}
+		for(Item item : itemList) {
+			BigDecimal cost = totalCost.getAmount();
+			BigDecimal itemCost = item.getValue().getAmount();
+			totalCost = Money.pounds(itemCost.add(cost));
+		}
+		return totalCost;
+	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(customerId, id, itemList, orderDate);
+		return Objects.hash(customerId, id, itemList, orderDate, totalCost);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -72,13 +102,17 @@ public class Order {
 			return false;
 		Order other = (Order) obj;
 		return Objects.equals(customerId, other.customerId) && Objects.equals(id, other.id)
-				&& Objects.equals(itemList, other.itemList) && Objects.equals(orderDate, other.orderDate);
+				&& Objects.equals(itemList, other.itemList) && Objects.equals(orderDate, other.orderDate)
+				&& Objects.equals(totalCost, other.totalCost);
 	}
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", customerId=" + customerId + ", orderDate=" + orderDate + ", itemList=" + itemList
-				+ "]";
+				+ ", totalCost=" + totalCost + "]";
 	}
+	
+	
+	
 	
 	
 }
