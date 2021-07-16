@@ -23,6 +23,7 @@ import com.qa.ims.utils.Utils;
 public class OrderController implements CrudController<Order> {
 
 	public static final Logger LOGGER = LogManager.getLogger();
+	
 	private Utils utils;
 
 	private OrderDAO orderDAO;
