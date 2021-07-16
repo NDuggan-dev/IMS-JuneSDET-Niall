@@ -1,11 +1,13 @@
 package com.qa.ims.controllers;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,15 +23,15 @@ import com.qa.ims.utils.Utils;
 @RunWith(MockitoJUnitRunner.class)
 public class CustomerControllerTest {
 
-	@Mock
+	@Mock 
 	private Utils utils;
-
 	@Mock
 	private CustomerDAO dao;
 
 	@InjectMocks
 	private CustomerController controller;
 
+	
 	@Test
 	public void testCreate() {
 		final String F_NAME = "barry", L_NAME = "scott";

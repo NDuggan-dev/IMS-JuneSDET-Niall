@@ -70,7 +70,7 @@ public class OrderControllerTest {
 		final List<Item> BASKET = new ArrayList<Item>();
 		BASKET.add(ITEM);
 		final Order created = new Order(ID, BASKET);
-		CATALOGUE.put(1L, ITEM);
+		CATALOGUE.put(1L, ITEM); 
 
 		Mockito.when(utils.getLong()).thenReturn(ID);
 		Mockito.when(controller.catalogue()).thenReturn(CATALOGUE);
@@ -147,9 +147,5 @@ public class OrderControllerTest {
 
 		assertEquals(expected, result);
 	}
-	
-	
-	
-	
 
 }
